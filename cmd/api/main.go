@@ -10,6 +10,7 @@ import (
 	"github.com/natz/go-lib-app/internal/database"
 	"github.com/natz/go-lib-app/internal/server"
 
+	_ "github.com/natz/go-lib-app/internal/auth"
 	_ "github.com/natz/go-lib-app/internal/books"
 )
 

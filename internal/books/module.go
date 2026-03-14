@@ -13,6 +13,9 @@ type BookModule struct {
 
 func NewModule(c *container.Container) server.Module {
 
+	// run migration
+	// Migrate(c.DB)
+
 	repo := NewBookRepository(c.DB)
 	service := NewBookService(repo)
 	handler := NewBookHandler(service)
