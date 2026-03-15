@@ -36,3 +36,15 @@ func NotFound(c *gin.Context, message string) {
 func Internal(c *gin.Context) {
 	Error(c, http.StatusInternalServerError, "internal server error")
 }
+
+func Unauthorized(c *gin.Context, message string) {
+	Error(c, http.StatusUnauthorized, message)
+}
+
+func Forbidden(c *gin.Context, message string) {
+	Error(c, http.StatusForbidden, message)
+}
+
+func Conflict(c *gin.Context, message string) {
+	Error(c, http.StatusConflict, message)
+}

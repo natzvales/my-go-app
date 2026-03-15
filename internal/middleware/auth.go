@@ -4,48 +4,57 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/natz/go-lib-app/internal/response"
 	"github.com/natz/go-lib-app/internal/shared/contracts"
+	jwtutil "github.com/natz/go-lib-app/internal/utils/jwt"
 )
 
-const userKey = "user"
+var userService contracts.UserService
 
-func AuthMiddleware(secret string) gin.HandlerFunc {
+func SetUserService(service contracts.UserService) {
+	userService = service
+}
+
+func AuthMiddleware() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 
 		tokenString := c.GetHeader("Authorization")
 
 		if tokenString == "" {
-			c.AbortWithStatusJSON(401, gin.H{"error": "Unauthorized"})
+			// c.AbortWithStatusJSON(401, gin.H{"error": "Unauthorized"})
+			response.Unauthorized(c, "Unauthorized")
+			c.Abort()
 			return
 		}
 
 		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 
-		token, err := jwt.ParseWithClaims(tokenString, &auth.Claims{}, func(token *jwt.Token) (interface{}, error) {
-			return []byte(secret), nil
-		})
-
+		user, err := jwtutil.ValidateToken(tokenString, userService)
 		if err != nil {
-			c.AbortWithStatusJSON(401, gin.H{"error": "Invalid token"})
+			// c.AbortWithStatusJSON(401, gin.H{"error": "Invalid token or user not found"})
+			response.Unauthorized(c, "Invalid token or user not found")
+			c.Abort()
 			return
 		}
 
-		claims := token.Claims.(*auth.Claims)
-
-		c.Set("userID", claims.UserID)
-		c.Set("role", claims.Role)
-
+		c.Set("user", user)
 		c.Next()
 	}
 }
 
 func GetUser(c *gin.Context) contracts.User {
 
-	user, _ := c.Get(userKey)
+	user, _ := c.Get("user")
 
 	return user.(contracts.User)
+}
+
+func GetRole(c *gin.Context) string {
+
+	user := GetUser(c)
+
+	return user.Role
 }
 
 // ParseToken is a placeholder implementation. Replace with your actual token parsing logic.

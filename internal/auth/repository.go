@@ -1,11 +1,14 @@
 package auth
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
 
 type Repository interface {
 	Create(user *User) error
 	FindByEmail(email string) (User, error)
-	FindByID(id uint) (User, error)
+	FindByID(id uuid.UUID) (User, error)
 }
 
 type repository struct {
@@ -29,11 +32,11 @@ func (r *repository) FindByEmail(email string) (User, error) {
 	return user, err
 }
 
-func (r *repository) FindByID(id uint) (User, error) {
+func (r *repository) FindByID(id uuid.UUID) (User, error) {
 
 	var user User
 
-	err := r.db.First(&user, id).Error
+	err := r.db.Where("id = ?", id).First(&user).Error
 
 	return user, err
 }

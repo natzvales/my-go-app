@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/natz/go-lib-app/internal/config"
 	"github.com/natz/go-lib-app/internal/container"
 	"github.com/natz/go-lib-app/internal/database"
 	"github.com/natz/go-lib-app/internal/server"
@@ -28,8 +29,9 @@ func main() {
 
 	// Connect to DB
 	db := database.Connect()
+	cfg := config.LoadConfig()
 
-	container := container.NewContainer(db)
+	container := container.NewContainer(db, cfg)
 
 	// Collect modules
 

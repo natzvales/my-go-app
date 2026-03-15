@@ -1,6 +1,9 @@
 package books
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/natz/go-lib-app/internal/middleware"
+)
 
 func RegisterBookRoutes(rg *gin.RouterGroup, handler *BookHandler) {
 
@@ -9,8 +12,9 @@ func RegisterBookRoutes(rg *gin.RouterGroup, handler *BookHandler) {
 	{
 		books.GET("", handler.GetBooks)
 		books.GET("/:id", handler.GetBook)
-		books.POST("", handler.CreateBook)
-		books.PUT("/:id", handler.UpdateBook)
-		books.DELETE("/:id", handler.DeleteBook)
+		books.Use(middleware.AuthMiddleware())
+		books.POST("", middleware.RequireRole("librarian", "admin"), handler.CreateBook)
+		books.PUT("/:id", middleware.RequireRole("librarian", "admin"), handler.UpdateBook)
+		books.DELETE("/:id", middleware.RequireRole("admin"), handler.DeleteBook)
 	}
 }

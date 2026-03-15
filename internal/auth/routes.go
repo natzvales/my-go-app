@@ -13,7 +13,7 @@ func RegisterRoutes(rg *gin.RouterGroup, handler *Handler, service *Service) {
 	auth.POST("/login", handler.Login)
 
 	auth.GET("/me",
-		middleware.AuthMiddleware(service),
+		middleware.AuthMiddleware(),
 		handler.Me,
 	)
 }

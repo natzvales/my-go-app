@@ -28,13 +28,15 @@ func (h *BookHandler) GetBooks(c *gin.Context) {
 func (h *BookHandler) GetBook(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.Error(appErrors.New(400, "invalid ID"))
+		// c.Error(appErrors.New(400, "invalid ID"))
+		response.BadRequest(c, "invalid ID")
+
 		return
 	}
 
 	book, err := h.service.GetBook(id)
 	if err != nil {
-		c.Error(err)
+		response.NotFound(c, "Book not Found")
 		return
 	}
 
@@ -45,8 +47,7 @@ func (h *BookHandler) CreateBook(c *gin.Context) {
 
 	var dto CreateBookDTO
 	if err := c.ShouldBindJSON(&dto); err != nil {
-		// response.BadRequest(c, "invalid request body")
-		c.Error(appErrors.New(400, err.Error()))
+		response.BadRequest(c, "invalid request body")
 		return
 	}
 
@@ -62,7 +63,8 @@ func (h *BookHandler) CreateBook(c *gin.Context) {
 func (h *BookHandler) UpdateBook(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.Error(appErrors.New(400, "invalid ID"))
+		// c.Error(appErrors.New(400, "invalid ID"))
+		response.BadRequest(c, "invalid ID")
 		return
 	}
 
@@ -71,6 +73,7 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 	if err := c.ShouldBindJSON(&dto); err != nil {
 		// response.BadRequest(c, "invalid request body")
 		c.Error(appErrors.New(400, err.Error()))
+		// response.BadRequest(c, "invalid ID")
 		return
 	}
 

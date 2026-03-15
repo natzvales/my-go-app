@@ -4,20 +4,22 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
+	"github.com/natz/go-lib-app/internal/config"
 	"golang.org/x/crypto/argon2"
 )
 
-const (
-	memory      = 64 * 1024
-	iterations  = 3
-	parallelism = 2
-	keyLength   = 32
-	saltLength  = 16
-)
+// const (
+// 	memory      = 64 * 1024
+// 	iterations  = 3
+// 	parallelism = 2
+// 	keyLength   = 32
+// 	saltLength  = 16
+// )
 
 func HashPassword(password string) (string, error) {
 
-	salt := make([]byte, saltLength)
+	cfg := config.LoadConfig()
+	salt := make([]byte, cfg.SALTLENGTH)
 
 	_, err := rand.Read(salt)
 	if err != nil {
@@ -27,10 +29,10 @@ func HashPassword(password string) (string, error) {
 	hash := argon2.IDKey(
 		[]byte(password),
 		salt,
-		iterations,
-		memory,
-		parallelism,
-		keyLength,
+		uint32(cfg.ITERATIONS),
+		uint32(cfg.MEMORY),
+		uint8(cfg.PARALLELISM),
+		uint32(cfg.KEYLENGTH),
 	)
 
 	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
@@ -41,18 +43,28 @@ func HashPassword(password string) (string, error) {
 
 func VerifyPassword(password, encoded string) bool {
 
+	cfg := config.LoadConfig()
 	parts := split(encoded)
+	if len(parts) != 2 {
+		return false
+	}
 
-	salt, _ := base64.RawStdEncoding.DecodeString(parts[0])
-	hash, _ := base64.RawStdEncoding.DecodeString(parts[1])
+	salt, err := base64.RawStdEncoding.DecodeString(parts[0])
+	if err != nil {
+		return false
+	}
+	hash, err := base64.RawStdEncoding.DecodeString(parts[1])
+	if err != nil {
+		return false
+	}
 
 	newHash := argon2.IDKey(
 		[]byte(password),
 		salt,
-		iterations,
-		memory,
-		parallelism,
-		keyLength,
+		uint32(cfg.ITERATIONS),
+		uint32(cfg.MEMORY),
+		uint8(cfg.PARALLELISM),
+		uint32(cfg.KEYLENGTH),
 	)
 
 	return base64.RawStdEncoding.EncodeToString(newHash) ==

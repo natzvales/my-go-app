@@ -1,13 +1,18 @@
 package container
 
-import "gorm.io/gorm"
+import (
+	"github.com/natz/go-lib-app/internal/config"
+	"gorm.io/gorm"
+)
 
 type Container struct {
-	DB *gorm.DB
+	DB     *gorm.DB
+	Config *config.Config
 }
 
-func NewContainer(db *gorm.DB) *Container {
+func NewContainer(db *gorm.DB, cfg *config.Config) *Container {
 	return &Container{
-		DB: db,
+		DB:     db,
+		Config: cfg,
 	}
 }
