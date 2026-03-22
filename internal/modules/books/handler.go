@@ -1,11 +1,9 @@
 package books
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
-	appErrors "github.com/natz/go-lib-app/internal/errors"
 	"github.com/natz/go-lib-app/internal/response"
+	"github.com/natz/go-lib-app/internal/shared/validators"
 )
 
 type BookHandler struct {
@@ -26,13 +24,7 @@ func (h *BookHandler) GetBooks(c *gin.Context) {
 }
 
 func (h *BookHandler) GetBook(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		// c.Error(appErrors.New(400, "invalid ID"))
-		response.BadRequest(c, "invalid ID")
-
-		return
-	}
+	id := validators.GetUUIDParam(c, "id")
 
 	book, err := h.service.GetBook(id)
 	if err != nil {
@@ -45,11 +37,7 @@ func (h *BookHandler) GetBook(c *gin.Context) {
 
 func (h *BookHandler) CreateBook(c *gin.Context) {
 
-	var dto CreateBookDTO
-	if err := c.ShouldBindJSON(&dto); err != nil {
-		response.BadRequest(c, "invalid request body")
-		return
-	}
+	dto := validators.GetBody[CreateBookDTO](c)
 
 	book, err := h.service.CreateBook(dto)
 	if err != nil {
@@ -61,21 +49,9 @@ func (h *BookHandler) CreateBook(c *gin.Context) {
 }
 
 func (h *BookHandler) UpdateBook(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		// c.Error(appErrors.New(400, "invalid ID"))
-		response.BadRequest(c, "invalid ID")
-		return
-	}
 
-	var dto UpdateBookDTO
-
-	if err := c.ShouldBindJSON(&dto); err != nil {
-		// response.BadRequest(c, "invalid request body")
-		c.Error(appErrors.New(400, err.Error()))
-		// response.BadRequest(c, "invalid ID")
-		return
-	}
+	id := validators.GetUUIDParam(c, "id")
+	dto := validators.GetBody[UpdateBookDTO](c)
 
 	book, err := h.service.UpdateBook(id, dto)
 	if err != nil {
@@ -89,14 +65,15 @@ func (h *BookHandler) UpdateBook(c *gin.Context) {
 }
 
 func (h *BookHandler) DeleteBook(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		// response.BadRequest(c, "invalid ID")
-		c.Error(appErrors.New(400, "invalid id"))
-		return
-	}
+	// id, err := strconv.Atoi(c.Param("id"))
+	// if err != nil {
+	// 	// response.BadRequest(c, "invalid ID")
+	// 	c.Error(appErrors.New(400, "invalid id"))
+	// 	return
+	// }
+	id := validators.GetUUIDParam(c, "id")
 
-	err = h.service.DeleteBook(id)
+	err := h.service.DeleteBook(id)
 
 	if err != nil {
 		c.Error(err)

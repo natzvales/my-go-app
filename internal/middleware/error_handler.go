@@ -25,7 +25,8 @@ func ErrorHandler() gin.HandlerFunc {
 			})
 
 		default:
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error"})
+			// c.JSON(http.StatusInternalServerError, gin.H{"error": "internal server error ",})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 	}
 }

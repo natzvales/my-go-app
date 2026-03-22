@@ -3,6 +3,7 @@ package books
 import (
 	"errors"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -30,7 +31,7 @@ func (r *BookRepository) GetAll() ([]Book, error) {
 	return books, result.Error
 }
 
-func (r *BookRepository) GetByID(id int) (Book, error) {
+func (r *BookRepository) GetByID(id uuid.UUID) (Book, error) {
 	var book Book
 	result := r.db.First(&book, id)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -47,7 +48,7 @@ func (r *BookRepository) Update(book *Book) error {
 	return r.db.Save(book).Error
 }
 
-func (r *BookRepository) Delete(id int) error {
+func (r *BookRepository) Delete(id uuid.UUID) error {
 	// result := r.db.Delete(&Book{}, id)
 	// if result.RowsAffected == 0 {
 	// 	return errors.New("book not found")

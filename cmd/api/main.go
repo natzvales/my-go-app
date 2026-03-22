@@ -11,8 +11,8 @@ import (
 	"github.com/natz/go-lib-app/internal/database"
 	"github.com/natz/go-lib-app/internal/server"
 
-	_ "github.com/natz/go-lib-app/internal/auth"
-	_ "github.com/natz/go-lib-app/internal/books"
+	_ "github.com/natz/go-lib-app/internal/modules/auth"
+	_ "github.com/natz/go-lib-app/internal/modules/books"
 )
 
 func main() {

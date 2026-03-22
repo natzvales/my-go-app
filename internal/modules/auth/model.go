@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/google/uuid"
+	"github.com/natz/go-lib-app/internal/modules/rbac"
 	"gorm.io/gorm"
 )
 
@@ -9,8 +10,10 @@ type User struct {
 	ID       uuid.UUID `gorm:"type:uuid;primaryKey"` // UUID primary key
 	Name     string    `gorm:"not null"`
 	Email    string    `gorm:"unique;not null"`
-	Password string    `gorm:"not null"`              // hashed password
-	Role     string    `gorm:"default:user;not null"` // user role: admin, librarian, member
+	Password string    `gorm:"not null"` // hashed password
+
+	RoleID uuid.UUID `gorm:"type:uuid;not null"` // foreign key to Role
+	Role   rbac.Role `gorm:"foreignKey:RoleID"`  // association to Role
 }
 
 // BeforeCreate GORM hook: auto-generate UUID before inserting record
